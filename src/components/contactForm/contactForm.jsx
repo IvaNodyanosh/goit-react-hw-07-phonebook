@@ -3,8 +3,9 @@ import { useState } from 'react';
 import { RiContactsFill } from 'react-icons/ri';
 import { BsTelephoneFill } from 'react-icons/bs';
 import { BsPersonFillAdd } from 'react-icons/bs';
-import { useAddContactMutation } from 'store/contacts/contactsApi';
-import { useGetContactsQuery } from 'store/contacts/contactsApi';
+import { addContact } from 'store/contacts/contactsOperation';
+import { useDispatch, useSelector } from 'react-redux';
+import { getContacts } from 'store/getSelectors';
 
 export const ContactForm = () => {
   const [contactInfo, changeContactInfo] = useState({
@@ -12,11 +13,12 @@ export const ContactForm = () => {
     number: '',
   });
 
-    const { data: contacts} = useGetContactsQuery();
-
   const { name, number } = contactInfo;
 
-  const [ addContact] = useAddContactMutation();
+  const dispatch = useDispatch();
+
+
+  const contacts = useSelector(getContacts);
 
   const formReset = () => {
     changeContactInfo({ name: '', number: '' });
@@ -30,7 +32,7 @@ export const ContactForm = () => {
       return alert(`${number}is already in contacts`);
     }
     formReset();
-    addContact({name, number});
+    dispatch(addContact(contactInfo));
   };
 
   const changeInput = e => {
