@@ -3,10 +3,8 @@ import { useState } from 'react';
 import { RiContactsFill } from 'react-icons/ri';
 import { BsTelephoneFill } from 'react-icons/bs';
 import { BsPersonFillAdd } from 'react-icons/bs';
-import { addContact } from 'store/contacts/contactsSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import { nanoid } from 'nanoid';
-import { getContacts } from 'store/getSelectors';
+import { useAddContactMutation } from 'store/contacts/contactsApi';
+import { useGetContactsQuery } from 'store/contacts/contactsApi';
 
 export const ContactForm = () => {
   const [contactInfo, changeContactInfo] = useState({
@@ -14,12 +12,11 @@ export const ContactForm = () => {
     number: '',
   });
 
+    const { data: contacts} = useGetContactsQuery();
+
   const { name, number } = contactInfo;
 
-  const dispatch = useDispatch();
-
-  const handleAddContact = contact => dispatch(addContact(contact));
-  const contacts = useSelector(getContacts);
+  const [ addContact] = useAddContactMutation();
 
   const formReset = () => {
     changeContactInfo({ name: '', number: '' });
@@ -32,9 +29,8 @@ export const ContactForm = () => {
     } else if (contacts.some(contact => contact.number === number)) {
       return alert(`${number}is already in contacts`);
     }
-    const id = nanoid();
-    formReset()
-    handleAddContact({ id, name, number });
+    formReset();
+    addContact({name, number});
   };
 
   const changeInput = e => {
